@@ -1,7 +1,7 @@
-#version 330
-varying out vec4 FragColor;
+#version 330 core
+out vec4 FragColor;
   
-varying in vec3 vertexCoord;
+in vec3 vertexCoord;
 
 void main()
 {

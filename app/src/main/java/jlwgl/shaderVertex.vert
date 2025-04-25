@@ -1,7 +1,7 @@
-#version 330
+#version 330 core
 in vec3 aPos;
   
-varying out vec3 vertexCoord;
+out vec3 vertexCoord;
 
 void main()
 {
