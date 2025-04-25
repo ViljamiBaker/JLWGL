@@ -1,0 +1,10 @@
+#version 330
+varying out vec4 FragColor;
+  
+varying in vec3 vertexCoord;
+
+void main()
+{
+    vec3 col = vertexCoord.xyx;
+    FragColor = vec4(col,0.5);
+} 
