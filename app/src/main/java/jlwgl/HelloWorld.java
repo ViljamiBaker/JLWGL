@@ -23,17 +23,9 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.system.MemoryUtil.*;
+import static jlwgl.ShaderLoader.*;
 
-import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL33;
 //https://learnopengl.com/Getting-started/OpenGL
 //https://www.lwjgl.org/guide
 public class HelloWorld {
@@ -65,83 +57,6 @@ public class HelloWorld {
 		return vertexArray;
 	}
 
-	private void checkShader(int shader, String name){
-		int[]  success = new int[1];
-		GL33.glGetShaderiv(shader, GL_COMPILE_STATUS, success);
-		if(success[0]==0)
-		{
-			String info = GL33.glGetShaderInfoLog(shader,512);
-			System.out.println("ERROR::SHADER::"+name+"::COMPILATION_FAILED\n" + info);
-		}
-	}
-
-	private int createShaderProgram(String vertexShaderFile, String fragmentShaderFile){
-		// create a vertex shader to move vertexes around
-		String vertexShaderSource = null;
-		ArrayList<Integer> lengths = new ArrayList<>();
-		try  {
-			File i = new File(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\" + vertexShaderFile + ".vert");
-			Scanner sc = new Scanner(i);
-			StringBuilder sb = new StringBuilder();
-			String line = sc.nextLine();
-
-			while (sc.hasNextLine()) {
-				line = sc.nextLine() + "\n";
-				sb.append(line);
-				lengths.add(line.length());
-			}
-			vertexShaderSource = sb.toString();
-			sc.close();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-
-		int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-		GL33.glShaderSource(vertexShader, PointerBuffer.create(ByteBuffer.wrap(vertexShaderSource.getBytes(StandardCharsets.UTF_8))), IntBuffer.wrap(NULL));
-		GL33.glCompileShader(vertexShader);
-		// error logging if it dont work
-		checkShader(vertexShader,"Vertex");
-
-		// create a fragment shader to color in the triangles based off of what the vertex shader says
-		String fragmentShaderSource = null;
-
-		try  {
-			File i = new File(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\" + fragmentShaderFile + ".frag");
-			Scanner sc = new Scanner(i);
-			StringBuilder sb = new StringBuilder();
-			String line = sc.nextLine();
-
-			while (sc.hasNextLine()) {
-				line = sc.nextLine();
-				sb.append(line);
-				sb.append(System.lineSeparator());
-			}
-			fragmentShaderSource = sb.toString();
-			sc.close();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-
-		int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		GL33.glShaderSource(fragmentShader, fragmentShaderSource);
-		GL33.glCompileShader(fragmentShader);	
-		// error logging if it dont work
-		checkShader(fragmentShader,"Fragment");
-
-		// create a shader program using our vertex and frag shaders
-		int shaderProgram = glCreateProgram();
-
-		glAttachShader(shaderProgram, vertexShader);
-		glAttachShader(shaderProgram, fragmentShader);
-		glLinkProgram(shaderProgram);
-
-		glDeleteShader(vertexShader);
-		glDeleteShader(fragmentShader);
-		return shaderProgram;
-	}
-
 	public HelloWorld (){
 		// makes glfw wake up
 		glfwInit();
@@ -164,9 +79,9 @@ public class HelloWorld {
 
 		// ----------- Creation of the shaderProgram -----------
 
-		int shaderProgram1 = createShaderProgram("shaderVertex", "shaderFrag");
+		int shaderProgram1 = loadShader("shaderVertex", "shaderFrag");
 
-		int shaderProgram2 = createShaderProgram("shaderVertex2", "shaderFrag2");
+		int shaderProgram2 = loadShader("shaderVertex2", "shaderFrag2");
 
 		// ----------- creation of all of the buffers -----------
 
@@ -180,9 +95,9 @@ public class HelloWorld {
 		float vertices2[] = {
 			// positions          colors
 			0.1f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-			0.1f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-			0.7f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-			0.7f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+			0.1f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+			0.7f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
+			0.7f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,
 		};
 		// create many triangles with reused indecies for efficientices
 		int indices1[] = {
@@ -196,7 +111,29 @@ public class HelloWorld {
 
 		// create a vertexBuffer to store all of the vertexes in
 		int vertexArray1 = createVertexArray(vertices1, indices1); 
-		int vertexArray2 = createVertexArray(vertices2, indices2); 
+		// create a vertexBuffer to store all of the vertexes in
+		int vertexBuffer = glGenBuffers(); 
+
+		// create a vertexArray to make things easier (?)
+		int vertexArray2 = glGenVertexArrays();
+	
+		// create an element buffer to allow reusing of the vertexes
+		int elementBuffer = glGenBuffers();
+	
+		// ..:: Initialization code :: ..
+		// 1. bind Vertex Array Object
+		glBindVertexArray(vertexArray2);
+		// 2. copy our vertices array in a vertex buffer for OpenGL to use
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertices2, GL_STATIC_DRAW);
+		// 3. copy our index array in a element buffer for OpenGL to use
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2, GL_STATIC_DRAW);
+		// 4. then set the vertex attributes pointers
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * Float.BYTES, 0);
+		glEnableVertexAttribArray(0); 
+		glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
+		glEnableVertexAttribArray(1); 
 
 		// ----------- render loop ----------- 
 		while(!glfwWindowShouldClose(window))
