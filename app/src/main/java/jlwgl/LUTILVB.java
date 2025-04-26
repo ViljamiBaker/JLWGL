@@ -1,28 +1,28 @@
 package jlwgl;
 
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-import static org.lwjgl.opengl.GL20.glAttachShader;
-import static org.lwjgl.opengl.GL20.glCompileShader;
-import static org.lwjgl.opengl.GL20.glCreateProgram;
-import static org.lwjgl.opengl.GL20.glCreateShader;
-import static org.lwjgl.opengl.GL20.glDeleteShader;
-import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
-import static org.lwjgl.opengl.GL20.glGetShaderi;
-import static org.lwjgl.opengl.GL20.glLinkProgram;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glValidateProgram;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.system.MemoryUtil.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class ShaderLoader {
-    private ShaderLoader(){}
+import org.lwjgl.opengl.GL;
 
-    public static String loadAsString(String location){
+public class LUTILVB {
+
+    public static void init(){
+        // makes glfw wake up
+		glfwInit();
+		glfwDefaultWindowHints();
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		// lets us use glfw and gl commands
+		GL.createCapabilities();
+    }
+
+	public static String loadAsString(String location){
         StringBuilder result = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(location));
@@ -39,8 +39,8 @@ public class ShaderLoader {
     }
 
     public static int loadShader(String vertPath, String fragPath){
-        String vert = loadAsString(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\" + vertPath + ".vert");
-        String frag = loadAsString(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\" + fragPath + ".frag");
+        String vert = loadAsString(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\shaderPrograms\\" + vertPath + ".vert");
+        String frag = loadAsString(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\shaderPrograms\\\\" + fragPath + ".frag");
 
         return create(vert,frag);
     }

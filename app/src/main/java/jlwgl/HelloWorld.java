@@ -23,7 +23,6 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.system.MemoryUtil.*;
-import static jlwgl.ShaderLoader.*;
 
 import org.lwjgl.opengl.GL;
 //https://learnopengl.com/Getting-started/OpenGL
@@ -58,30 +57,14 @@ public class HelloWorld {
 	}
 
 	public HelloWorld (){
-		// makes glfw wake up
-		glfwInit();
-		glfwDefaultWindowHints();
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		// make a window
-		long window = glfwCreateWindow(300, 300, "wsg gang", NULL, NULL);
-		if(window == NULL){
-			glfwTerminate();
-			System.exit(1);
-		}
-		// lets us use glfw and gl commands
-		glfwMakeContextCurrent(window);
-		GL.createCapabilities();
-		glViewport(0, 0, 300, 300);
-		glfwSetWindowSizeCallback(window, (windowInner, width, height) -> {
-			glViewport(0, 0, width, height);
-		});
+		
+		init()
 
 		// ----------- Creation of the shaderProgram -----------
 
-		int shaderProgram1 = loadShader("shaderVertex", "shaderFrag");
+		Shader shaderProgram1 = new Shader("shaderVertex", "shaderFrag");
 
-		int shaderProgram2 = loadShader("shaderVertex2", "shaderFrag2");
+		Shader shaderProgram2 = new Shader("shaderVertex2", "shaderFrag2");
 
 		// ----------- creation of all of the buffers -----------
 
@@ -146,14 +129,14 @@ public class HelloWorld {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			float timeValue = (float)glfwGetTime();
-			int time = glGetUniformLocation(shaderProgram1, "time");
-			glUseProgram(shaderProgram1);
-			glUniform1f(time, timeValue);
+			shaderProgram1.use();;
+			shaderProgram1.setFloat("time", timeValue);
 			glBindVertexArray(vertexArray1);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 
-			glUseProgram(shaderProgram2);
+			shaderProgram2.use();
+			shaderProgram2.setFloat("offset", (float)Math.sin(timeValue)*0.5f);
 			glBindVertexArray(vertexArray2);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);

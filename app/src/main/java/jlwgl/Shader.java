@@ -1,6 +1,9 @@
 package jlwgl;
 
-import static jlwgl.ShaderLoader.*;
+import static jlwgl.LUTILVB.*;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.glUniform1f;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class Shader {
@@ -14,7 +17,16 @@ public class Shader {
         glUseProgram(ID);
     }
 
-    void setBool(String name, boolean value){
-
+    void setBool(String name, boolean value)
+    {         
+        glUniform1i(glGetUniformLocation(ID, name), (value ? 1 : 0)); 
     }
+    void setInt(String name, int value)
+    { 
+        glUniform1f(glGetUniformLocation(ID, name), value); 
+    }
+    void setFloat(String name, float value)
+    { 
+        glUniform1f(glGetUniformLocation(ID, name), value); 
+    } 
 }
