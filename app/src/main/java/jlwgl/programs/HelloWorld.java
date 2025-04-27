@@ -1,5 +1,6 @@
-package jlwgl;
+package jlwgl.programs;
 
+import static jlwgl.util.LUTILVB.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_FILL;
@@ -21,7 +22,8 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static jlwgl.LUTILVB.*;
+
+import jlwgl.util.Shader;
 
 //https://learnopengl.com/Getting-started/OpenGL
 //https://www.lwjgl.org/guide

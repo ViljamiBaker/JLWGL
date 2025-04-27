@@ -1,28 +1,45 @@
-package jlwgl;
-
-import static jlwgl.LUTILVB.*;
+package jlwgl.programs;
+import static jlwgl.util.LUTILVB.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_FILL;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_LINE;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.opengl.GL43.*;
+
+import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GLDebugMessageCallback;
 
-//https://learnopengl.com/Getting-started/Textures
-public class Textures {
+import external.math.*;
+import jlwgl.util.*;
+//https://learnopengl.com/Getting-started/Transformations
+public class Transformations {
     boolean wireframe = false;
-	float offset = 0;
-    public Textures(){
-        init();
-        long window = createWindow(300, 300, "Textures");
+    float offset = 0.0f;
+    public Transformations(){
 
-		//glEnable(GL_DEBUG_OUTPUT);
+        init();
+
+        long window = createWindow(300, 300, "Transformations");
+
+        glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(GLDebugMessageCallback.create(
             (source, type, id, severity, length, message, userParam) -> {
             System.err.println("OpenGL Debug Message:");
@@ -34,9 +51,9 @@ public class Textures {
             }
         ),0);
 
-		Shader shader = new Shader("shaderVertexTexture", "shaderFragTexture");
+        Shader shader = new Shader("shaderVertexTransformations", "shaderFragTransformations");
 
-		float[] vertices = {
+        float[] vertices = {
 			// positions          // colors           // texture coords
 			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
 			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
@@ -62,27 +79,15 @@ public class Textures {
 		// textureCoords
 		glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * Float.BYTES, Float.BYTES*6);
 		glEnableVertexAttribArray(2); 
-		
-		Texture tex1 = new Texture("normal.jpg");
-		tex1.bind();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		Texture tex2 = new Texture("image lol.png");
-		tex2.bind();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        Texture tex1 = new Texture("normal.jpg");
+        Texture tex2 = new Texture("image lol.png");
 
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		shader.use();
-		shader.setInt("tex1", (int)0);
-		shader.setInt("tex2", (int)1);
-
+        Matrix4f trans = new Matrix4f();
+        trans.multiply(Matrix4f.rotate((float)Math.PI, new Vector3f(0, 0, 1)));
+        trans.multiply(Matrix4f.scale(new Vector3f(0.5f, 0.5f, 0.5f)));
+        shader.use();
+        shader.setUniform("transform", trans);
         while(!glfwWindowShouldClose(window))
 		{
 			// input
@@ -131,6 +136,6 @@ public class Textures {
 	}
 
     public static void main(String[] args) {
-        new Textures();
+        new Transformations();
     }
 }

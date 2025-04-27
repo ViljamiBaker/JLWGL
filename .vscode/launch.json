@@ -4,13 +4,25 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
+        {
+            "type": "java",
+            "name": "Transformations",
+            "request": "launch",
+            "mainClass": "jlwgl.programs.Transformations",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
+            "name": "Transformations",
+            "request": "launch",
+            "mainClass": "jlwgl.Transformations",
+            "projectName": "app"
+        },
         {
             "type": "java",
             "name": "Current File",
             "request": "launch",
-            "mainClass": "${file}",
-            "vmArgs": "-XX:-CriticalJNINatives"
+            "mainClass": "${file}"
         },
         {
             "type": "java",

@@ -1,4 +1,4 @@
-package jlwgl;
+package jlwgl.util;
 
 import org.lwjgl.BufferUtils;
 
