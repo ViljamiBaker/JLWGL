@@ -8,12 +8,14 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
 
 public class Texture {
     private String filepath;
     private int texID;
 
     public Texture(String filepath) {
+        stbi_set_flip_vertically_on_load(true);  
         this.filepath = filepath;
 
         // Generate texture on GPU
@@ -32,7 +34,7 @@ public class Texture {
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
         IntBuffer channels = BufferUtils.createIntBuffer(1);
-        ByteBuffer image = stbi_load(filepath, width, height, channels, 0);
+        ByteBuffer image = stbi_load(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\textures\\" + filepath, width, height, channels, 0);
 
         if (image != null) {
             if (channels.get(0) == 3) {

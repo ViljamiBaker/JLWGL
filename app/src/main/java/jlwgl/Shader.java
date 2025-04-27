@@ -23,7 +23,7 @@ public class Shader {
     }
     void setInt(String name, int value)
     { 
-        glUniform1f(glGetUniformLocation(ID, name), value); 
+        glUniform1i(glGetUniformLocation(ID, name), value); 
     }
     void setFloat(String name, float value)
     { 
