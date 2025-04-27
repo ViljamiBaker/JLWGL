@@ -1,28 +1,94 @@
 package jlwgl;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.GL_FALSE;
+import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.system.MemoryUtil.*;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
+import javax.imageio.ImageIO;
+
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferShort;
+import java.awt.image.DataBufferUShort;
+import java.awt.image.DataBufferInt;
+
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 public class LUTILVB {
 
     public static void init(){
         // makes glfw wake up
-		glfwInit();
+        GLFWErrorCallback.createPrint(System.err).set();
+        if ( !glfwInit() )
+            throw new IllegalStateException("Unable to initialize GLFW");
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    }
+
+    public static int createVertexArray(float vertices[], int indices[]){
+		// create a vertexBuffer to store all of the vertexes in
+		int vertexBuffer = glGenBuffers(); 
+
+		// create a vertexArray to make things easier (?)
+		int vertexArray = glGenVertexArrays();
+
+		// create an element buffer to allow reusing of the vertexes
+		int elementBuffer = glGenBuffers();
+
+		// ..:: Initialization code :: ..
+		// 1. bind Vertex Array Object
+		glBindVertexArray(vertexArray);
+		// 2. copy our vertices array in a vertex buffer for OpenGL to use
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+		// 3. copy our index array in a element buffer for OpenGL to use
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+		return vertexArray;
+	}
+
+    public static long createWindow(int sizex, int sizey, String name){
+        glfwInit();
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		// lets us use glfw and gl commands
-		GL.createCapabilities();
+		// make a window
+		long window = glfwCreateWindow(sizex, sizey, name, NULL, NULL);
+		if(window == NULL){
+			glfwTerminate();
+			System.exit(1);
+		}
+		glfwMakeContextCurrent(window);
+		//glViewport(0, 0, sizex, sizey);
+		glfwSetWindowSizeCallback(window, (windowInner, width, height) -> {
+			glViewport(0, 0, width, height);
+		});
+        GL.createCapabilities();
+        return window;
     }
 
-	public static String loadAsString(String location){
+	private static String loadAsString(String location){
         StringBuilder result = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(location));
@@ -40,12 +106,12 @@ public class LUTILVB {
 
     public static int loadShader(String vertPath, String fragPath){
         String vert = loadAsString(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\shaderPrograms\\" + vertPath + ".vert");
-        String frag = loadAsString(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\shaderPrograms\\\\" + fragPath + ".frag");
+        String frag = loadAsString(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\shaderPrograms\\" + fragPath + ".frag");
 
         return create(vert,frag);
     }
 
-    public static int create(String vert, String frag){
+    private static int create(String vert, String frag){
 
         int program = glCreateProgram();
 
@@ -78,5 +144,58 @@ public class LUTILVB {
         glDeleteShader(fragId);
 
         return program;
+    }
+
+    public static int[] getImageDims(String imageName){
+        BufferedImage bi = null;
+        try {
+            bi = ImageIO.read(new File(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\textures\\" + imageName));
+        } catch (Exception e) {
+            System.out.println("Failed to load " + imageName);
+            System.out.println(e.getMessage());
+            return null;
+        }
+        return new int[] {bi.getWidth(),bi.getHeight()};
+    }
+
+    public static ByteBuffer loadImage(String imageName){
+        BufferedImage bi = null;
+        try {
+            bi = ImageIO.read(new File(System.getProperty("user.dir") + "\\app\\src\\main\\java\\jlwgl\\textures\\" + imageName));
+            BufferedImage convertedImg = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_RGB);
+            convertedImg.getGraphics().drawImage(bi, 0, 0, null);
+            bi = convertedImg;
+        } catch (Exception e) {
+            System.out.println("Failed to load " + imageName);
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+        ByteBuffer byteBuffer;
+        DataBuffer dataBuffer = bi.getRaster().getDataBuffer();
+
+        if (dataBuffer instanceof DataBufferByte) {
+            byte[] pixelData = ((DataBufferByte) dataBuffer).getData();
+            byteBuffer = ByteBuffer.wrap(pixelData);
+        }
+        else if (dataBuffer instanceof DataBufferUShort) {
+            short[] pixelData = ((DataBufferUShort) dataBuffer).getData();
+            byteBuffer = ByteBuffer.allocate(pixelData.length * 2);
+            byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
+        }
+        else if (dataBuffer instanceof DataBufferShort) {
+            short[] pixelData = ((DataBufferShort) dataBuffer).getData();
+            byteBuffer = ByteBuffer.allocate(pixelData.length * 2);
+            byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
+        }
+        else if (dataBuffer instanceof DataBufferInt) {
+            int[] pixelData = ((DataBufferInt) dataBuffer).getData();
+            byteBuffer = ByteBuffer.allocate(pixelData.length * 4);
+            byteBuffer.asIntBuffer().put(IntBuffer.wrap(pixelData));
+        }
+        else {
+            throw new IllegalArgumentException("Not implemented for data buffer type: " + dataBuffer.getClass());
+        }
+        return byteBuffer;
     }
 }

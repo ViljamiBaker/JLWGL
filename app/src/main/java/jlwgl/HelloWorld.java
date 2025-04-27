@@ -12,7 +12,6 @@ import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
-import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -22,9 +21,8 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.system.MemoryUtil.*;
+import static jlwgl.LUTILVB.*;
 
-import org.lwjgl.opengl.GL;
 //https://learnopengl.com/Getting-started/OpenGL
 //https://www.lwjgl.org/guide
 public class HelloWorld {
@@ -58,7 +56,9 @@ public class HelloWorld {
 
 	public HelloWorld (){
 		
-		init()
+		init();
+
+		long window = createWindow(300, 300, "HelloWorld");
 
 		// ----------- Creation of the shaderProgram -----------
 
