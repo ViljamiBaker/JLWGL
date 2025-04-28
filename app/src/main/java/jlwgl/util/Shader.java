@@ -61,14 +61,14 @@ public class Shader {
     }
 
     public void setUniform(String name, Matrix2f value) {
-        glUniformMatrix2fv(glGetUniformLocation(ID, name), true, value.get(new float[4]));
+        glUniformMatrix2fv(glGetUniformLocation(ID, name), false, value.get(new float[4]));
     }
 
     public void setUniform(String name, Matrix3f value) {
-        glUniformMatrix3fv(glGetUniformLocation(ID, name), true, value.get(new float[9]));
+        glUniformMatrix3fv(glGetUniformLocation(ID, name), false, value.get(new float[9]));
     }
 
     public void setUniform(String name, Matrix4f value) {
-        glUniformMatrix4fv(glGetUniformLocation(ID, name), true, value.get(new float[16]));
+        glUniformMatrix4fv(glGetUniformLocation(ID, name), false, value.get(new float[16]));
     }
 }

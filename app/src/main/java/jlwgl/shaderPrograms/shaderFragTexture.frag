@@ -1,15 +1,12 @@
 #version 330 core
 out vec4 FragColor;
-  
-in vec3 ourColor;
+
 in vec2 TexCoord;
 
-uniform float time;
-uniform float offset;
-uniform sampler2D tex1;
-uniform sampler2D tex2;
+uniform sampler2D texture1;
+uniform sampler2D texture2;
 
 void main()
 {
-    FragColor = mix(texture(tex1, TexCoord), texture(tex2, TexCoord), sin(time)+0.5+offset);
+    FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);
 }

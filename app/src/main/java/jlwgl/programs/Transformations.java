@@ -23,12 +23,12 @@ import static org.lwjgl.opengl.GL43.*;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GLDebugMessageCallback;
 import jlwgl.util.*;
 //https://learnopengl.com/Getting-started/Transformations
 public class Transformations {
     boolean wireframe = false;
-    float offset = 0.0f;
     public Transformations(){
 
         init();
@@ -86,16 +86,17 @@ public class Transformations {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			shader.use();
-			Matrix4f trans = new Matrix4f();
-			trans = trans.rotate((float)glfwGetTime()*20.0f,new Vector3f(0,0,1));
-			trans = trans.scale(new Vector3f(0.5f,0.5f,0.5f));
-			shader.setUniform("transform", trans);
+			Matrix4f model = new Matrix4f().rotate(0.2f, new Vector3f(-1, 0, 0));
+			Matrix4f veiw = new Matrix4f().translate(new Vector3f(0, 0, -9));
+			Matrix4f projection = new Matrix4f().perspective(2.0f, 300.0f / 300.0f, 0.1f, 100.0f);
+			shader.setUniform("model", model);
+			shader.setUniform("veiw", veiw);
+			shader.setUniform("projection", projection);
 			glActiveTexture(GL_TEXTURE0);
 			tex1.bind();
 			glActiveTexture(GL_TEXTURE1);
 			tex2.bind();
 			//shader.setFloat("time", (float)glfwGetTime());
-			shader.setFloat("offset", offset);
 			glBindVertexArray(vertexArray);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -118,12 +119,6 @@ public class Transformations {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
 			wireframe = !wireframe;
-		}
-		if(glfwGetKey(window, GLFW_KEY_UP)==GLFW_PRESS){
-			offset += 0.01f;
-		}
-		if(glfwGetKey(window, GLFW_KEY_DOWN)==GLFW_PRESS){
-			offset -= 0.01f;
 		}
 	}
 
