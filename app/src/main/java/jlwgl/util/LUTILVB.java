@@ -85,6 +85,7 @@ public class LUTILVB {
 			glViewport(0, 0, width, height);
 		});
         GL.createCapabilities();
+        glfwSwapInterval(1);
         return window;
     }
 

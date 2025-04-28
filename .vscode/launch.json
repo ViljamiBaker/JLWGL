@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Textures",
+            "request": "launch",
+            "mainClass": "jlwgl.programs.Textures",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
             "name": "Transformations",
             "request": "launch",
             "mainClass": "jlwgl.programs.Transformations",

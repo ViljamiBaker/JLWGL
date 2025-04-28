@@ -20,6 +20,7 @@ import jlwgl.util.Texture;
 //https://learnopengl.com/Getting-started/Textures
 public class Textures {
     boolean wireframe = false;
+	boolean wDownLast = false;
 	float offset = 0;
     public Textures(){
         init();
@@ -108,6 +109,7 @@ public class Textures {
 			// check events and swap buffers
 			glfwSwapBuffers(window);
 			glfwPollEvents();
+			try {Thread.sleep(16);} catch (Exception e) {}
 		}
 		glfwTerminate();
     }
@@ -117,7 +119,7 @@ public class Textures {
 		if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 		
-		if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+		if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS&&!wDownLast){
 			if(!wireframe){
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}else{
@@ -125,11 +127,18 @@ public class Textures {
 			}
 			wireframe = !wireframe;
 		}
+		wDownLast = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
 		if(glfwGetKey(window, GLFW_KEY_UP)==GLFW_PRESS){
 			offset += 0.01f;
+			if(offset > 1){
+				offset = 1;
+			}
 		}
 		if(glfwGetKey(window, GLFW_KEY_DOWN)==GLFW_PRESS){
 			offset -= 0.01f;
+			if(offset < 0){
+				offset = 0;
+			}
 		}
 	}
 

@@ -19,6 +19,11 @@ repositories {
 }
 
 dependencies {
+
+	//GLM
+	implementation("kotlin.graphics:glm:0.9.9.1-11")
+
+	//LWJGL
 	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
 	implementation "org.lwjgl:lwjgl"
@@ -115,3 +120,4 @@ tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
