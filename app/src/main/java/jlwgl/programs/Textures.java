@@ -101,7 +101,7 @@ public class Textures {
 			tex1.bind();
 			glActiveTexture(GL_TEXTURE1);
 			tex2.bind();
-			//shader.setFloat("time", (float)glfwGetTime());
+			shader.setFloat("time", (float)glfwGetTime()*2);
 			shader.setFloat("offset", offset);
 			glBindVertexArray(vertexArray);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -12,6 +12,7 @@ plugins {
 
 project.ext.lwjglVersion = "3.4.0-SNAPSHOT"
 project.ext.lwjglNatives = "natives-windows"
+project.ext.jomlVersion = "1.10.9-SNAPSHOT"
 
 repositories {
 	mavenCentral()
@@ -20,8 +21,8 @@ repositories {
 
 dependencies {
 
-	//GLM
-	implementation("kotlin.graphics:glm:0.9.9.1-11")
+	//https://github.com/JOML-CI/JOML/
+	implementation ("org.joml:joml:$jomlVersion")
 
 	//LWJGL
 	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
