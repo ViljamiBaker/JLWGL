@@ -68,6 +68,22 @@ public class LUTILVB {
 		return vertexArray;
 	}
 
+    public static int createVertexArray(float vertices[]){
+		// create a vertexBuffer to store all of the vertexes in
+		int vertexBuffer = glGenBuffers(); 
+
+		// create a vertexArray to make things easier (?)
+		int vertexArray = glGenVertexArrays();
+
+		// ..:: Initialization code :: ..
+		// 1. bind Vertex Array Object
+		glBindVertexArray(vertexArray);
+		// 2. copy our vertices array in a vertex buffer for OpenGL to use
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+		return vertexArray;
+	}
+
     public static long createWindow(int sizex, int sizey, String name){
         glfwInit();
 		glfwDefaultWindowHints();
@@ -83,6 +99,7 @@ public class LUTILVB {
 		//glViewport(0, 0, sizex, sizey);
 		glfwSetWindowSizeCallback(window, (windowInner, width, height) -> {
 			glViewport(0, 0, width, height);
+            System.out.println(width);
 		});
         GL.createCapabilities();
         glfwSwapInterval(1);
