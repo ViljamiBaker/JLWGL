@@ -15,9 +15,14 @@ public class Camera {
 	float lastX = 400, lastY = 300;
 	boolean firstMouse = true;
     long window;
+
+	boolean projectionGood = false;
+
+	boolean mouseMoveEnabled = true;
     public Camera(long window){
         this.window = window;
         glfwSetCursorPosCallback(window, (windowInner, xpos, ypos)->{
+			if(!mouseMoveEnabled)return;
 			if (firstMouse) // initially set to true
 			{
 				lastX = (float)xpos;
@@ -49,12 +54,19 @@ public class Camera {
 			cameraFront = direction.normalize();
 		}); 
     }
+
     public Matrix4f getProjection(){
+		projectionGood = true;
         int[] width = new int[1];
         int[] height = new int[1];
         glfwGetWindowSize(window, width, height);
-        return new Matrix4f().perspective(fov, (float)width[0]/(float)height[0], 0.1f, 100.0f).lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
+        return new Matrix4f().perspective(fov, (float)width[0]/(float)height[0], 0.1f, 100.0f);
     }
+
+	public Matrix4f getVeiw(){
+        return new Matrix4f().lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
+    }
+
     public void processInput(float deltaTime){
 		float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
@@ -71,9 +83,21 @@ public class Camera {
 		}
 		if(glfwGetKey(window, GLFW_KEY_R)==GLFW_PRESS){
 			fov += 0.05f;
+			projectionGood = false;
 		}
 		if(glfwGetKey(window, GLFW_KEY_F)==GLFW_PRESS){
 			fov -= 0.05f;
+			projectionGood = false;
 		}
     }
+
+	public boolean projectionGood(){
+		return projectionGood;
+	}
+	public void setMouseMoveEnabled(boolean mouseMoveEnabled) {
+		this.mouseMoveEnabled = mouseMoveEnabled;
+		if(mouseMoveEnabled){
+			firstMouse = true;
+		}
+	}
 }
