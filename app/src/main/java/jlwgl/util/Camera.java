@@ -6,7 +6,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Camera {
-	Vector3f cameraPos = new Vector3f(0.0f, 0.0f,  3.0f);
+	public Vector3f cameraPos = new Vector3f(0.0f, 0.0f,  3.0f);
 	Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
 	Vector3f cameraUp = new Vector3f(0.0f, 1.0f,  0.0f);
 	float fov = 1.0f;
@@ -56,7 +56,6 @@ public class Camera {
         return new Matrix4f().perspective(fov, (float)width[0]/(float)height[0], 0.1f, 100.0f).lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
     }
     public void processInput(float deltaTime){
-        
 		float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
 			cameraPos.add(cameraFront.mul(cameraSpeed, new Vector3f()));

@@ -14,26 +14,30 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL43.*;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GLDebugMessageCallback;
 import jlwgl.util.*;
-//https://learnopengl.com/Getting-started/Transformations
+//https://learnopengl.com/Lighting/Colors
 public class Transformations {
     boolean wireframe = false;
 	boolean pDownLast = false;
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrame = 0.0f; // Time of last frame
 	Camera camera;
-	Vector3f lightPos = new Vector3f(1.2f, 1.0f, 2.0f);
     public Transformations(){
 
         init();
 
-        long window = createWindow(800, 600, "Transformations");
+        long window = createWindow(800, 600, "Colors");
 		glEnable(GL_DEPTH_TEST);  
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		enableDebug();
@@ -43,61 +47,85 @@ public class Transformations {
         Shader shader = new Shader("shaderVertexTransformations", "shaderFragTransformations");
 
         float vertices[] = {
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 		
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 		
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 		
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 		
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 		
-			-0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
 
 		//int vertexArray = createVertexArray(vertices, indecies);
 		int vertexArray = createVertexArray(vertices);
 		glBindVertexArray(vertexArray);
 		// pos
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * Float.BYTES, 0);
 		glEnableVertexAttribArray(0); 
+		
+		// textureCoords
+		glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.BYTES, Float.BYTES*3);
+		glEnableVertexAttribArray(1); 
+
+        Texture tex1 = new Texture("normal.jpg");
+        Texture tex2 = new Texture("image lol.png");
 
         shader.use();
-		shader.setUniform("lightColor", new Vector3f(1.0f, 1.0f, 1.0f));
 		Matrix4f projection = new Matrix4f().perspective(1.0f, 300.0f / 300.0f, 0.1f, 100.0f);
 		Matrix4f model = new Matrix4f().rotate((float)glfwGetTime() * 1f, new Vector3f(0.5f, 1.0f, 0.0f));
 
+		Vector3f[] cubePositions = {
+			new Vector3f( 0.0f,  0.0f,  0.0f), 
+			new Vector3f( 2.0f,  5.0f, -15.0f), 
+			new Vector3f(-1.5f, -2.2f, -2.5f),  
+			new Vector3f(-3.8f, -2.0f, -12.3f),  
+			new Vector3f( 2.4f, -0.4f, -3.5f),  
+			new Vector3f(-1.7f,  3.0f, -7.5f),  
+			new Vector3f( 1.3f, -2.0f, -2.5f),  
+			new Vector3f( 1.5f,  2.0f, -2.5f), 
+			new Vector3f( 1.5f,  0.2f, -1.5f), 
+			new Vector3f(-1.3f,  1.0f, -1.5f)  
+		};
+		glActiveTexture(GL_TEXTURE0);
+		tex1.bind();
+		glActiveTexture(GL_TEXTURE1);
+		tex2.bind();
+		shader.setInt("texture1", (int)0);
+		shader.setInt("texture2", (int)1);
         while(!glfwWindowShouldClose(window))
 		{
 			float currentFrame = (float)glfwGetTime();
@@ -119,6 +147,7 @@ public class Transformations {
 				float angle = 20.0f * i + (float)glfwGetTime(); 
 				model = new Matrix4f().translate(cubePositions[i]).rotate(angle, new Vector3f(1.0f, 0.3f, 0.5f)); 
 				shader.setUniform("model", model);
+				shader.setFloat("mixpercent", (float)Math.sin(angle)/2.0f+0.5f);
 				//shader.setFloat("time", (float)glfwGetTime());
 				glBindVertexArray(vertexArray);
 				glDrawArrays(GL_TRIANGLES, 0, 36);

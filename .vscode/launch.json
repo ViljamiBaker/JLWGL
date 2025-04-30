@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Colors",
+            "request": "launch",
+            "mainClass": "jlwgl.programs.Colors",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
             "name": "Textures",
             "request": "launch",
             "mainClass": "jlwgl.programs.Textures",
