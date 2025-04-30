@@ -9,11 +9,9 @@ import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_LINE;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -26,24 +24,15 @@ import static org.lwjgl.opengl.GL43.*;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWWindowPosCallbackI;
 import org.lwjgl.opengl.GLDebugMessageCallback;
 import jlwgl.util.*;
 //https://learnopengl.com/Getting-started/Transformations
 public class Transformations {
     boolean wireframe = false;
 	boolean pDownLast = false;
-	Vector3f cameraPos = new Vector3f(0.0f, 0.0f,  3.0f);
-	Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
-	Vector3f cameraUp = new Vector3f(0.0f, 1.0f,  0.0f);
-	float fov = 1.0f;
-	float yaw = 0;
-	float pitch = 0;
-	float lastX = 400, lastY = 300;
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrame = 0.0f; // Time of last frame
-	boolean firstMouse = true;
+	Camera camera;
     public Transformations(){
 
         init();
@@ -62,6 +51,8 @@ public class Transformations {
             System.err.println("    Message: " + GLDebugMessageCallback.getMessage(length, message));
             }
         ),0);
+
+		camera = new Camera(window);
 
         Shader shader = new Shader("shaderVertexTransformations", "shaderFragTransformations");
 
@@ -108,12 +99,7 @@ public class Transformations {
 			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
-
-		int[] indecies = {
-			0, 1, 3,   
-			1, 2, 3,  
-		};
-
+		
 		//int vertexArray = createVertexArray(vertices, indecies);
 		int vertexArray = createVertexArray(vertices);
 		glBindVertexArray(vertexArray);
@@ -150,38 +136,6 @@ public class Transformations {
 		tex2.bind();
 		shader.setInt("texture1", (int)0);
 		shader.setInt("texture2", (int)1);
-		glfwSetCursorPosCallback(window, (windowInner, xpos, ypos)->{
-			if (firstMouse) // initially set to true
-			{
-				lastX = (float)xpos;
-				lastY = (float)ypos;
-				firstMouse = false;
-			}
-
-			float xoffset = (float)xpos - lastX;
-			float yoffset = lastY - (float)ypos;
-			lastX = (float)xpos;
-			lastY = (float)ypos;
-			
-			float sensitivity = 0.002f;
-			xoffset *= sensitivity;
-			yoffset *= sensitivity;
-
-			yaw   += xoffset;
-			pitch += yoffset;  
-
-			if(pitch > 1.55f)
-			pitch =  1.55f;
-			if(pitch < -1.55f)
-			pitch = -1.55f;
-
-			Vector3f direction = new Vector3f();
-			direction.x = (float)Math.cos(yaw) * (float)Math.cos(pitch);
-			direction.y = (float)Math.sin(pitch);
-			direction.z = (float)Math.sin(yaw) * (float)Math.cos(pitch);
-			cameraFront = direction.normalize();
-		});  
-
         while(!glfwWindowShouldClose(window))
 		{
 			float currentFrame = (float)glfwGetTime();
@@ -196,11 +150,8 @@ public class Transformations {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			shader.use();
-			int[] width = new int[1];
-			int[] height = new int[1];
-			glfwGetWindowSize(window, width, height);
 
-			projection = new Matrix4f().perspective(fov, (float)width[0]/(float)height[0], 0.1f, 100.0f).lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
+			projection = camera.getProjection();
 			shader.setUniform("projection", projection);
 			for (int i = 0; i < cubePositions.length; i++) {
 				float angle = 20.0f * i + (float)glfwGetTime(); 
@@ -233,25 +184,7 @@ public class Transformations {
 			wireframe = !wireframe;
 		}
 		pDownLast = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
-		float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-			cameraPos.add(cameraFront.mul(cameraSpeed, new Vector3f()));
-		}
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-			cameraPos.sub(cameraFront.mul(cameraSpeed, new Vector3f()));
-		}
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-			cameraPos.sub((cameraFront.cross(cameraUp, new Vector3f())).normalize().mul(cameraSpeed,new Vector3f()));
-		}
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-			cameraPos.add((cameraFront.cross(cameraUp, new Vector3f())).normalize().mul(cameraSpeed,new Vector3f()));
-		}
-		if(glfwGetKey(window, GLFW_KEY_R)==GLFW_PRESS){
-			fov += 0.05f;
-		}
-		if(glfwGetKey(window, GLFW_KEY_F)==GLFW_PRESS){
-			fov -= 0.05f;
-		}
+		camera.processInput(deltaTime);
 	}
 
     public static void main(String[] args) {
