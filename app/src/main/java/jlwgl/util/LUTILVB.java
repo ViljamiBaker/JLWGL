@@ -88,6 +88,19 @@ public class LUTILVB {
 		return vertexArray;
 	}
 
+    public static int createVertexArray(){
+
+		// create a vertexArray to make things easier (?)
+		int vertexArray = glGenVertexArrays();
+
+		// ..:: Initialization code :: ..
+		// 1. bind Vertex Array Object
+		glBindVertexArray(vertexArray);
+		// 2. copy our vertices array in a vertex buffer for OpenGL to use
+		glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
+		return vertexArray;
+	}
+
     public static long createWindow(int sizex, int sizey, String name){
         glfwInit();
 		glfwDefaultWindowHints();
