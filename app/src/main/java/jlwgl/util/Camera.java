@@ -60,7 +60,7 @@ public class Camera {
         int[] width = new int[1];
         int[] height = new int[1];
         glfwGetWindowSize(window, width, height);
-        return new Matrix4f().perspective(fov, (float)width[0]/(float)height[0], 0.1f, 100.0f);
+        return new Matrix4f().perspective(fov, (float)width[0]/(float)height[0], 0.01f, 100.0f);
     }
 
 	public Matrix4f getVeiw(){
