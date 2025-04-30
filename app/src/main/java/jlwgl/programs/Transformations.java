@@ -40,17 +40,7 @@ public class Transformations {
         long window = createWindow(800, 600, "Transformations");
 		glEnable(GL_DEPTH_TEST);  
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback(GLDebugMessageCallback.create(
-            (source, type, id, severity, length, message, userParam) -> {
-            System.err.println("OpenGL Debug Message:");
-            System.err.println("    Source: " + source);
-            System.err.println("    Type: " + type);
-            System.err.println("    ID: " + id);
-            System.err.println("    Severity: " + severity);
-            System.err.println("    Message: " + GLDebugMessageCallback.getMessage(length, message));
-            }
-        ),0);
+		enableDebug();
 
 		camera = new Camera(window);
 
@@ -99,7 +89,7 @@ public class Transformations {
 			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
-		
+
 		//int vertexArray = createVertexArray(vertices, indecies);
 		int vertexArray = createVertexArray(vertices);
 		glBindVertexArray(vertexArray);

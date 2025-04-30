@@ -2,6 +2,7 @@ package jlwgl.util;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
+import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
@@ -12,6 +13,8 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL43.GL_DEBUG_OUTPUT;
+import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
 import static org.lwjgl.system.MemoryUtil.*;
 
 import java.io.BufferedReader;
@@ -33,6 +36,7 @@ import java.awt.image.DataBufferInt;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLDebugMessageCallback;
 
 public class LUTILVB {
 
@@ -214,5 +218,19 @@ public class LUTILVB {
             throw new IllegalArgumentException("Not implemented for data buffer type: " + dataBuffer.getClass());
         }
         return byteBuffer;
+    }
+
+    public static void enableDebug(){
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(GLDebugMessageCallback.create(
+            (source, type, id, severity, length, message, userParam) -> {
+            System.err.println("OpenGL Debug Message:");
+            System.err.println("    Source: " + source);
+            System.err.println("    Type: " + type);
+            System.err.println("    ID: " + id);
+            System.err.println("    Severity: " + severity);
+            System.err.println("    Message: " + GLDebugMessageCallback.getMessage(length, message));
+            }
+        ),0);
     }
 }
