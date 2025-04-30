@@ -99,7 +99,6 @@ public class LUTILVB {
 		//glViewport(0, 0, sizex, sizey);
 		glfwSetWindowSizeCallback(window, (windowInner, width, height) -> {
 			glViewport(0, 0, width, height);
-            System.out.println(width);
 		});
         GL.createCapabilities();
         glfwSwapInterval(1);

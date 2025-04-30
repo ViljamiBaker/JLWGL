@@ -26,6 +26,7 @@ import static org.lwjgl.opengl.GL43.*;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWWindowPosCallbackI;
 import org.lwjgl.opengl.GLDebugMessageCallback;
 import jlwgl.util.*;
@@ -42,12 +43,12 @@ public class Transformations {
 	float lastX = 400, lastY = 300;
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrame = 0.0f; // Time of last frame
-	boolean firstMouse = false;
+	boolean firstMouse = true;
     public Transformations(){
 
         init();
 
-        long window = createWindow(300, 300, "Transformations");
+        long window = createWindow(800, 600, "Transformations");
 		glEnable(GL_DEPTH_TEST);  
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glEnable(GL_DEBUG_OUTPUT);
@@ -129,8 +130,7 @@ public class Transformations {
 
         shader.use();
 		Matrix4f projection = new Matrix4f().perspective(1.0f, 300.0f / 300.0f, 0.1f, 100.0f);
-		Matrix4f model = new Matrix4f().rotate((float)glfwGetTime() * 1f, new Vector3f(0.5f, 1.0f, 0.0f)); 
-		Matrix4f view = new Matrix4f().translate(new Vector3f(0, 0, -3));
+		Matrix4f model = new Matrix4f().rotate((float)glfwGetTime() * 1f, new Vector3f(0.5f, 1.0f, 0.0f));
 
 		Vector3f[] cubePositions = {
 			new Vector3f( 0.0f,  0.0f,  0.0f), 
@@ -148,32 +148,33 @@ public class Transformations {
 		tex1.bind();
 		glActiveTexture(GL_TEXTURE1);
 		tex2.bind();
-		glfwSetWindowPosCallback(window, (windowInner, xpos, ypos)->{
+		shader.setInt("texture1", (int)0);
+		shader.setInt("texture2", (int)1);
+		glfwSetCursorPosCallback(window, (windowInner, xpos, ypos)->{
 			if (firstMouse) // initially set to true
 			{
-				lastX = xpos;
-				lastY = ypos;
+				lastX = (float)xpos;
+				lastY = (float)ypos;
 				firstMouse = false;
 			}
 
-			float xoffset = xpos - lastX;
-			float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
-			lastX = xpos;
-			lastY = ypos;
+			float xoffset = (float)xpos - lastX;
+			float yoffset = lastY - (float)ypos;
+			lastX = (float)xpos;
+			lastY = (float)ypos;
 			
-			float sensitivity = 0.1f;
+			float sensitivity = 0.002f;
 			xoffset *= sensitivity;
 			yoffset *= sensitivity;
 
 			yaw   += xoffset;
 			pitch += yoffset;  
 
-			if(pitch > 3.0f)
-			pitch =  3.0f;
-			if(pitch < -3.0f)
-			pitch = -3.0f;
+			if(pitch > 1.55f)
+			pitch =  1.55f;
+			if(pitch < -1.55f)
+			pitch = -1.55f;
 
-			System.out.println(xpos);
 			Vector3f direction = new Vector3f();
 			direction.x = (float)Math.cos(yaw) * (float)Math.cos(pitch);
 			direction.y = (float)Math.sin(pitch);
@@ -199,21 +200,13 @@ public class Transformations {
 			int[] height = new int[1];
 			glfwGetWindowSize(window, width, height);
 
-			//Vector3f cameraTarget = new Vector3f(0.0f, 0.0f, 0.0f);
-			//Vector3f cameraDirection = pos.sub(cameraTarget).normalize();
-
-			//Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f); 
-			//Vector3f cameraRight = up.cross(cameraDirection).normalize();
-			//Vector3f cameraUp = cameraDirection.cross(cameraRight);
-
 			projection = new Matrix4f().perspective(fov, (float)width[0]/(float)height[0], 0.1f, 100.0f).lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
 			shader.setUniform("projection", projection);
-			view = new Matrix4f();//.translate(pos);
-			shader.setUniform("view", view);
 			for (int i = 0; i < cubePositions.length; i++) {
 				float angle = 20.0f * i + (float)glfwGetTime(); 
 				model = new Matrix4f().translate(cubePositions[i]).rotate(angle, new Vector3f(1.0f, 0.3f, 0.5f)); 
 				shader.setUniform("model", model);
+				shader.setFloat("mixpercent", (float)Math.sin(angle)/2.0f+0.5f);
 				//shader.setFloat("time", (float)glfwGetTime());
 				glBindVertexArray(vertexArray);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
