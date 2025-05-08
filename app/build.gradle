@@ -17,12 +17,14 @@ project.ext.jomlVersion = "1.10.9-SNAPSHOT"
 repositories {
 	mavenCentral()
 	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+	gitRepository(URI.create("https://github.com/ra4king/LWJGL-OpenGL-Utils.git")) {
+        producesModule("JsonKay:JsonKay")
+    }
 }
 
 dependencies {
 
-	//https://github.com/JOML-CI/JOML/
-	implementation ("org.joml:joml:$jomlVersion")
+	implementation('LWJGL-OpenGL-Utils:LWJGL-OpenGL-Utils:1.0')
 
 	//LWJGL
 	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
