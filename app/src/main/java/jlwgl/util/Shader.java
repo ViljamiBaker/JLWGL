@@ -12,7 +12,9 @@ import static org.lwjgl.opengl.GL20.glUniformMatrix3fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 import org.joml.Matrix2f;
 import org.joml.Matrix3f;
@@ -49,15 +51,15 @@ public class Shader {
     }
 
     public void setUniform(String name, Vector2f value) {
-        glUniform2fv(glGetUniformLocation(ID, name), value.get(FloatBuffer.allocate(2)));
+        glUniform2fv(glGetUniformLocation(ID, name), value.get(ByteBuffer.allocateDirect(2*Float.BYTES).asFloatBuffer()));
     }
 
     public void setUniform(String name, Vector3f value) {
-        glUniform3fv(glGetUniformLocation(ID, name), value.get(FloatBuffer.allocate(3)));
+        glUniform3fv(glGetUniformLocation(ID, name), value.get(ByteBuffer.allocateDirect(3*Float.BYTES).asFloatBuffer()));
     }
 
     public void setUniform(String name, Vector4f value) {
-        glUniform4fv(glGetUniformLocation(ID, name), value.get(FloatBuffer.allocate(4)));
+        glUniform4fv(glGetUniformLocation(ID, name), value.get(ByteBuffer.allocateDirect(4*Float.BYTES).asFloatBuffer()));
     }
 
     public void setUniform(String name, Matrix2f value) {

@@ -5,15 +5,28 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FILL;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_LINE;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+
 import jlwgl.util.*;
 //https://learnopengl.com/Lighting/Colors
 public class Colors {
@@ -35,57 +48,77 @@ public class Colors {
 
 		camera = new Camera(window);
 
-        Shader shader = new Shader("shaderVertexTransformations", "shaderFragTransformations");
-
         float vertices[] = {
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
 		
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
 		
-			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
 		
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
 		
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,
 		
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+			-0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
 		};
 
-        shader.use();
 		Matrix4f projection = new Matrix4f().perspective(1.0f, 300.0f / 300.0f, 0.1f, 100.0f);
-		Matrix4f model = new Matrix4f().rotate((float)glfwGetTime() * 1f, new Vector3f(0.5f, 1.0f, 0.0f));
 		Matrix4f view = new Matrix4f();
 
+		int cubeVertexArray = glGenVertexArrays();
+		int vertexBuffer = glGenBuffers();
+
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    	glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+
+		glBindVertexArray(cubeVertexArray);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*3, 0);
+    	glEnableVertexAttribArray(0);
+
+		int lightCubeVertexArray = glGenVertexArrays();
+
+		glBindVertexArray(lightCubeVertexArray);
+
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*3, 0);
+    	glEnableVertexAttribArray(0);
+
+
+        Shader lightingShader = new Shader("shaderVertexColors", "shaderFragColors");
+
+		Shader shaderLC = new Shader("shaderVertexColors", "shaderFragColorsLC");
+		
         while(!glfwWindowShouldClose(window))
 		{
 			float currentFrame = (float)glfwGetTime();
@@ -99,13 +132,41 @@ public class Colors {
 			glClearColor(0.2f, 0.3f, 0.3f, 0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			shader.use();
+			lightingShader.use();
 			if(!camera.projectionGood()){
 				projection = camera.getProjection();
-				shader.setUniform("projection", projection);
+				lightingShader.setUniform("projection", projection);
 			}
 			view = camera.getVeiw();
-			shader.setUniform("view", view);
+			lightingShader.setUniform("view", view);
+
+			// be sure to activate shader when setting uniforms/drawing objects
+			lightingShader.use();		
+			lightingShader.setUniform("objectColor", new Vector3f(0.0f, 0.49f, 0.31f));
+			lightingShader.setUniform("lightColor",  new Vector3f(0.0f, 0.49f, 0.31f));
+
+			// world transformation
+			Matrix4f model = new Matrix4f();
+			lightingShader.setUniform("model", model);
+
+			// render the cube
+			glBindVertexArray(cubeVertexArray);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+			// also draw the lamp object
+			shaderLC.use();
+			shaderLC.setUniform("projection", projection);
+			shaderLC.setUniform("view", view);
+			model = new Matrix4f();
+			model.translate(new Vector3f(1,1,3));
+			model.scale(new Vector3f(0.2f)); // a smaller cube
+			shaderLC.setUniform("model", model);
+
+			glBindVertexArray(lightCubeVertexArray);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+
+			
 
 			// check events and swap buffers
 			glfwSwapBuffers(window);
