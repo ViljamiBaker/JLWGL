@@ -149,7 +149,7 @@ public class Transformations {
 			shader.setUniform("view", view);
 			for (int i = 0; i < cubePositions.length; i++) {
 				float angle = 20.0f * i + (float)glfwGetTime(); 
-				model = new Matrix4f().translate(cubePositions[i]).rotate(angle, new Vector3f(1.0f, 0.3f, 0.5f)); 
+				model = new Matrix4f().translate(cubePositions[i]).rotate(angle, new Vector3f(1.0f, 0.3f, 0.5f).normalize()); 
 				shader.setUniform("model", model);
 				shader.setFloat("mixpercent", (float)Math.sin(angle)/2.0f+0.5f);
 				//shader.setFloat("time", (float)glfwGetTime());

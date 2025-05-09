@@ -132,7 +132,7 @@ public class Colors {
 
 			//render code		
 
-			Vector3f lightPos = new Vector3f((float)Math.sin(currentFrame)*3.0f,(float)Math.sin(currentFrame/2),(float)Math.cos(currentFrame)*3.0f);
+			Vector3f lightPos = new Vector3f((float)Math.sin(currentFrame)*3.0f,(float)Math.sin(currentFrame*2),(float)Math.cos(currentFrame)*3.0f);
 
 			glClearColor(0.2f, 0.3f, 0.3f, 0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -142,7 +142,10 @@ public class Colors {
 				projection = camera.getProjection();
 				lightingShader.setUniform("projection", projection);
 			}
+			
 			view = camera.getVeiw();
+			//view = new Matrix4f().lookAt(lightPos, new Vector3f(), new Vector3f(0,1,0));
+
 			lightingShader.setUniform("view", view);
 
 			// be sure to activate shader when setting uniforms/drawing objects
@@ -173,11 +176,14 @@ public class Colors {
 			shaderLC.setUniform("projection", projection);
 			shaderLC.setUniform("view", view);
 			model = new Matrix4f();
+			//model.lookAt(lightPos, new Vector3f(), new Vector3f(0,-1,0));
 			model.translate(lightPos);
+			model.rotate((float)Math.sin(currentFrame), 0, 1, 0);
 			model.scale(new Vector3f(0.2f)); // a smaller cube
 			shaderLC.setUniform("model", model);
 
 			glBindVertexArray(lightCubeVertexArray);
+
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
 			
@@ -203,7 +209,6 @@ public class Colors {
 			wireframe = !wireframe;
 		}
 		if(glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS&&!lDownLast){
-			System.out.println(lockMouse);
 			if(lockMouse){
 				lockMouse = false;
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
