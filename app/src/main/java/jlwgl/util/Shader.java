@@ -51,15 +51,15 @@ public class Shader {
     }
 
     public void setUniform(String name, Vector2f value) {
-        glUniform2fv(glGetUniformLocation(ID, name), value.get(ByteBuffer.allocateDirect(2*Float.BYTES).asFloatBuffer()));
+        glUniform2fv(glGetUniformLocation(ID, name), new float[] {value.x, value.y});
     }
 
     public void setUniform(String name, Vector3f value) {
-        glUniform3fv(glGetUniformLocation(ID, name), value.get(ByteBuffer.allocateDirect(3*Float.BYTES).asFloatBuffer()));
+        glUniform3fv(glGetUniformLocation(ID, name), new float[] {value.x, value.y, value.z});
     }
 
     public void setUniform(String name, Vector4f value) {
-        glUniform4fv(glGetUniformLocation(ID, name), value.get(ByteBuffer.allocateDirect(4*Float.BYTES).asFloatBuffer()));
+        glUniform4fv(glGetUniformLocation(ID, name), new float[] {value.x, value.y, value.z, value.w});
     }
 
     public void setUniform(String name, Matrix2f value) {

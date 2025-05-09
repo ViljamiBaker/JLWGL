@@ -47,49 +47,49 @@ public class Colors {
 		enableDebug();
 
 		camera = new Camera(window);
-
-        float vertices[] = {
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			// pos                normal
+		float vertices[] = {
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
 		
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 		
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 		
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 		
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 		
-			-0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 		};
 
 		Matrix4f projection = new Matrix4f().perspective(1.0f, 300.0f / 300.0f, 0.1f, 100.0f);
@@ -103,16 +103,18 @@ public class Colors {
 
 		glBindVertexArray(cubeVertexArray);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*3, 0);
-    	glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*6, 0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, false, Float.BYTES*6, Float.BYTES*3);
+		glEnableVertexAttribArray(1);
 
 		int lightCubeVertexArray = glGenVertexArrays();
 
 		glBindVertexArray(lightCubeVertexArray);
 
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*3, 0);
-    	glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*6, 0);
+		glEnableVertexAttribArray(0);
 
 
         Shader lightingShader = new Shader("shaderVertexColors", "shaderFragColors");
@@ -129,6 +131,9 @@ public class Colors {
 			processInput(window);
 
 			//render code		
+
+			Vector3f lightPos = new Vector3f((float)Math.sin(currentFrame)*3.0f,(float)Math.sin(currentFrame/2),(float)Math.cos(currentFrame)*3.0f);
+
 			glClearColor(0.2f, 0.3f, 0.3f, 0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -142,8 +147,10 @@ public class Colors {
 
 			// be sure to activate shader when setting uniforms/drawing objects
 			lightingShader.use();		
-			lightingShader.setUniform("objectColor", new Vector3f(0.0f, 0.49f, 0.31f));
-			lightingShader.setUniform("lightColor",  new Vector3f(0.0f, 0.49f, 0.31f));
+			lightingShader.setUniform("objectColor", new Vector3f(1.0f, 0.5f, 0.31f));
+			lightingShader.setUniform("lightColor",  new Vector3f(1.0f, 1.0f, 1.0f));
+			lightingShader.setUniform("lightPos", lightPos);  
+			lightingShader.setUniform("viewPos", camera.cameraPos); 
 
 			// world transformation
 			Matrix4f model = new Matrix4f();
@@ -159,7 +166,7 @@ public class Colors {
 			shaderLC.setUniform("projection", projection);
 			shaderLC.setUniform("view", view);
 			model = new Matrix4f();
-			model.translate(new Vector3f(1,1,3));
+			model.translate(lightPos);
 			model.scale(new Vector3f(0.2f)); // a smaller cube
 			shaderLC.setUniform("model", model);
 
