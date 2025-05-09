@@ -147,10 +147,17 @@ public class Colors {
 
 			// be sure to activate shader when setting uniforms/drawing objects
 			lightingShader.use();		
-			lightingShader.setUniform("objectColor", new Vector3f(1.0f, 0.5f, 0.31f));
-			lightingShader.setUniform("lightColor",  new Vector3f(1.0f, 1.0f, 1.0f));
+			lightingShader.setUniform("material.ambient", 1.0f, 0.5f, 0.31f);
+			lightingShader.setUniform("material.diffuse", 1.0f, 0.5f, 0.31f);
+			lightingShader.setUniform("material.specular", 0.5f, 0.5f, 0.5f);
+			lightingShader.setFloat("material.shininess", 32.0f);
+			lightingShader.setUniform("objectColor", 0.5f, 0.5f, 0.31f);
+			lightingShader.setUniform("lightColor",  1.0f, 1.0f, 1.0f);
 			lightingShader.setUniform("lightPos", lightPos);  
 			lightingShader.setUniform("viewPos", camera.cameraPos); 
+			lightingShader.setUniform("light.ambient",  0.2f, 0.2f, 0.2f);
+			lightingShader.setUniform("light.diffuse",  0.5f, 0.5f, 0.5f); // darken diffuse light a bit
+			lightingShader.setUniform("light.specular", 1.0f, 1.0f, 1.0f); 
 
 			// world transformation
 			Matrix4f model = new Matrix4f();

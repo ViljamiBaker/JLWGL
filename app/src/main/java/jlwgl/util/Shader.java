@@ -50,12 +50,24 @@ public class Shader {
         return ID;
     }
 
+    public void setUniform(String name, float x, float y) {
+        glUniform2fv(glGetUniformLocation(ID, name), new float[] {x, y});
+    }
+
     public void setUniform(String name, Vector2f value) {
         glUniform2fv(glGetUniformLocation(ID, name), new float[] {value.x, value.y});
     }
 
+    public void setUniform(String name, float x, float y, float z) {
+        glUniform3fv(glGetUniformLocation(ID, name), new float[] {x, y, z});
+    }
+
     public void setUniform(String name, Vector3f value) {
         glUniform3fv(glGetUniformLocation(ID, name), new float[] {value.x, value.y, value.z});
+    }
+
+    public void setUniform(String name, float x, float y, float z, float w) {
+        glUniform4fv(glGetUniformLocation(ID, name), new float[] {x, y, z, w});
     }
 
     public void setUniform(String name, Vector4f value) {
