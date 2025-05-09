@@ -8,12 +8,24 @@ import static org.lwjgl.opengl.GL11.GL_FILL;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_LINE;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_REPEAT;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -47,49 +59,62 @@ public class Colors {
 		enableDebug();
 
 		camera = new Camera(window);
-			// pos                normal
 		float vertices[] = {
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+			// positions          // normals           // texture coords
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
 		
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
 		
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 		
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 		
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
 		
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
+		};
+
+		Vector3f[] cubePositions = {
+			new Vector3f( 0.0f,  0.0f,  0.0f), 
+			new Vector3f( 2.0f,  5.0f, -15.0f), 
+			new Vector3f(-1.5f, -2.2f, -2.5f),  
+			new Vector3f(-3.8f, -2.0f, -12.3f),  
+			new Vector3f( 2.4f, -0.4f, -3.5f),  
+			new Vector3f(-1.7f,  3.0f, -7.5f),  
+			new Vector3f( 1.3f, -2.0f, -2.5f),  
+			new Vector3f( 1.5f,  2.0f, -2.5f), 
+			new Vector3f( 1.5f,  0.2f, -1.5f), 
+			new Vector3f(-1.3f,  1.0f, -1.5f)  
 		};
 
 		Matrix4f projection = new Matrix4f().perspective(1.0f, 300.0f / 300.0f, 0.1f, 100.0f);
@@ -103,23 +128,39 @@ public class Colors {
 
 		glBindVertexArray(cubeVertexArray);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*6, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*8, 0);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, false, Float.BYTES*6, Float.BYTES*3);
+		glVertexAttribPointer(1, 3, GL_FLOAT, false, Float.BYTES*8, Float.BYTES*3);
 		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 2, GL_FLOAT, false, Float.BYTES*8, Float.BYTES*6);
+		glEnableVertexAttribArray(2);
 
 		int lightCubeVertexArray = glGenVertexArrays();
 
 		glBindVertexArray(lightCubeVertexArray);
 
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*6, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, Float.BYTES*8, 0);
 		glEnableVertexAttribArray(0);
 
 
         Shader lightingShader = new Shader("shaderVertexColors", "shaderFragColors");
 
 		Shader shaderLC = new Shader("shaderVertexColors", "shaderFragColorsLC");
+
+		Texture diffuseMap = new Texture("container2.png");
+		diffuseMap.bind();
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		Texture specularMap = new Texture("container2_specular.png");
+		specularMap.bind();
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		
         while(!glfwWindowShouldClose(window))
 		{
@@ -131,7 +172,7 @@ public class Colors {
 			processInput(window);
 
 			//render code		
-
+			//new Vector3f(1,1,3);
 			Vector3f lightPos = new Vector3f((float)Math.sin(currentFrame)*3.0f,(float)Math.sin(currentFrame*2),(float)Math.cos(currentFrame)*3.0f);
 
 			glClearColor(0.2f, 0.3f, 0.3f, 0f);
@@ -150,25 +191,37 @@ public class Colors {
 
 			// be sure to activate shader when setting uniforms/drawing objects
 			lightingShader.use();		
-			lightingShader.setUniform("material.ambient", 1.0f, 0.5f, 0.31f);
-			lightingShader.setUniform("material.diffuse", 1.0f, 0.5f, 0.31f);
-			lightingShader.setUniform("material.specular", 0.5f, 0.5f, 0.5f);
+			lightingShader.setInt("material.diffuse", 0);
+			lightingShader.setInt("material.specular", 1);
 			lightingShader.setFloat("material.shininess", 32.0f);
 			lightingShader.setUniform("objectColor", 0.5f, 0.5f, 0.31f);
 			lightingShader.setUniform("lightColor",  1.0f, 1.0f, 1.0f);
-			lightingShader.setUniform("lightPos", lightPos);  
+			lightingShader.setUniform("light.position", lightPos);  
 			lightingShader.setUniform("viewPos", camera.cameraPos); 
 			lightingShader.setUniform("light.ambient",  0.2f, 0.2f, 0.2f);
 			lightingShader.setUniform("light.diffuse",  0.5f, 0.5f, 0.5f); // darken diffuse light a bit
 			lightingShader.setUniform("light.specular", 1.0f, 1.0f, 1.0f); 
+			lightingShader.setUniform("light.position", lightPos); 
+			lightingShader.setFloat("light.constant",  1.0f);
+			lightingShader.setFloat("light.linear",    0.09f);
+			lightingShader.setFloat("light.quadratic", 0.032f);
+
+			glActiveTexture(GL_TEXTURE0);
+			diffuseMap.bind();
+			glActiveTexture(GL_TEXTURE1);
+			specularMap.bind();
 
 			// world transformation
 			Matrix4f model = new Matrix4f();
-			lightingShader.setUniform("model", model);
-
-			// render the cube
-			glBindVertexArray(cubeVertexArray);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			for (int i = 0; i < cubePositions.length; i++) {
+				float angle = 20.0f * i + (float)glfwGetTime(); 
+				model = new Matrix4f().translate(cubePositions[i]).rotate(angle, new Vector3f(1.0f, 0.3f, 0.5f).normalize()); 
+				lightingShader.setUniform("model", model);
+				lightingShader.setFloat("mixpercent", (float)Math.sin(angle)/2.0f+0.5f);
+				//shader.setFloat("time", (float)glfwGetTime());
+				glBindVertexArray(cubeVertexArray);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
 
 
 			// also draw the lamp object
