@@ -174,6 +174,12 @@ public class LUTILVB {
         glLinkProgram(program);
         glValidateProgram(program);
 
+        if(glGetProgrami(program,GL_VALIDATE_STATUS) == GL_FALSE){
+            System.out.println("program link fail :(");
+            System.out.println(glGetProgrami(program, GL_INFO_LOG_LENGTH));
+            System.out.println(glGetProgramInfoLog(program));
+        }
+
         glDeleteShader(vertId);
         glDeleteShader(fragId);
 
