@@ -47,7 +47,7 @@ public class Texture {
                 assert false : "Error: (Texture) Unknown number of channesl '" + channels.get(0) + "'";
             }
         } else {
-            assert false : "Error: (Texture) Could not load image '" + filepath + "'";
+            assert false : "Error: (Texture) Could not load image '" + this.filepath + "'";
         }
 
         stbi_image_free(image);

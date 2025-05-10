@@ -12,10 +12,6 @@ import static org.lwjgl.opengl.GL20.glUniformMatrix3fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.Arrays;
-
 import org.joml.Matrix2f;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;

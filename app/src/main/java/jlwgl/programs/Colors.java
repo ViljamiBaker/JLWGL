@@ -16,7 +16,6 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
@@ -117,6 +116,13 @@ public class Colors {
 			new Vector3f(-1.3f,  1.0f, -1.5f)  
 		};
 
+		Vector3f pointLightPositions[] = {
+			new Vector3f( 0.7f,  0.2f,  2.0f),
+			new Vector3f( 2.3f, -3.3f, -4.0f),
+			new Vector3f(-4.0f,  2.0f, -12.0f),
+			new Vector3f( 0.0f,  0.0f, -3.0f)
+		};  
+
 		Matrix4f projection = new Matrix4f().perspective(1.0f, 300.0f / 300.0f, 0.1f, 100.0f);
 		Matrix4f view = new Matrix4f();
 
@@ -173,7 +179,7 @@ public class Colors {
 
 			//render code		
 			//new Vector3f(1,1,3);
-			Vector3f lightPos = new Vector3f((float)Math.sin(currentFrame)*3.0f,(float)Math.sin(currentFrame*2),(float)Math.cos(currentFrame)*3.0f);
+			Vector3f lightPos = new Vector3f();//(float)Math.sin(currentFrame)*3.0f,(float)Math.sin(currentFrame*2),(float)Math.cos(currentFrame)*3.0f);
 
 			glClearColor(0.2f, 0.3f, 0.3f, 0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -191,20 +197,42 @@ public class Colors {
 
 			// be sure to activate shader when setting uniforms/drawing objects
 			lightingShader.use();		
+
 			lightingShader.setInt("material.diffuse", 0);
 			lightingShader.setInt("material.specular", 1);
 			lightingShader.setFloat("material.shininess", 32.0f);
+
 			lightingShader.setUniform("objectColor", 0.5f, 0.5f, 0.31f);
-			lightingShader.setUniform("lightColor",  1.0f, 1.0f, 1.0f);
-			lightingShader.setUniform("light.position", lightPos);  
-			lightingShader.setUniform("viewPos", camera.cameraPos); 
-			lightingShader.setUniform("light.ambient",  0.2f, 0.2f, 0.2f);
-			lightingShader.setUniform("light.diffuse",  0.5f, 0.5f, 0.5f); // darken diffuse light a bit
-			lightingShader.setUniform("light.specular", 1.0f, 1.0f, 1.0f); 
-			lightingShader.setUniform("light.position", lightPos); 
-			lightingShader.setFloat("light.constant",  1.0f);
-			lightingShader.setFloat("light.linear",    0.09f);
-			lightingShader.setFloat("light.quadratic", 0.032f);
+
+			// directional light
+			lightingShader.setUniform("dirLight.direction", -0.2f, -1.0f, -0.3f);
+			lightingShader.setUniform("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+			lightingShader.setUniform("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+			lightingShader.setUniform("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
+			// spotLight
+			lightingShader.setUniform("spotLight.position", camera.position);
+			lightingShader.setUniform("spotLight.direction", camera.front);
+			lightingShader.setUniform("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+			lightingShader.setUniform("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+			lightingShader.setUniform("spotLight.specular", 1.0f, 1.0f, 1.0f);
+			lightingShader.setFloat("spotLight.constant", 1.0f);
+			lightingShader.setFloat("spotLight.linear", 0.09f);
+			lightingShader.setFloat("spotLight.quadratic", 0.032f);
+			lightingShader.setFloat("spotLight.cutOff", (float)Math.cos(Math.toRadians(12.5f)));
+			lightingShader.setFloat("spotLight.outerCutOff", (float)Math.cos(Math.toRadians(15.0f)));  
+
+			for (int i = 0; i < pointLightPositions.length; i++) {
+				lightingShader.setUniform("pointLights["+ i +"].position", pointLightPositions[i]);
+				lightingShader.setUniform("pointLights["+ i +"].ambient", 0.05f, 0.05f, 0.05f);
+				lightingShader.setUniform("pointLights["+ i +"].diffuse", 0.8f, 0.8f, 0.8f);
+				lightingShader.setUniform("pointLights["+ i +"].specular", 1.0f, 1.0f, 1.0f);
+				lightingShader.setFloat("pointLights["+ i +"].constant", 1.0f);
+				lightingShader.setFloat("pointLights["+ i +"].linear", 0.3f);
+				lightingShader.setFloat("pointLights["+ i +"].quadratic", 0.5f);
+			}
+
+
 
 			glActiveTexture(GL_TEXTURE0);
 			diffuseMap.bind();
@@ -228,16 +256,15 @@ public class Colors {
 			shaderLC.use();
 			shaderLC.setUniform("projection", projection);
 			shaderLC.setUniform("view", view);
-			model = new Matrix4f();
-			//model.lookAt(lightPos, new Vector3f(), new Vector3f(0,-1,0));
-			model.translate(lightPos);
-			model.rotate((float)Math.sin(currentFrame), 0, 1, 0);
-			model.scale(new Vector3f(0.2f)); // a smaller cube
-			shaderLC.setUniform("model", model);
-
 			glBindVertexArray(lightCubeVertexArray);
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			for (int i = 0; i < 4; i++)
+			{
+				model = new Matrix4f();
+				model = model.translate(pointLightPositions[i]);
+				model = model.scale(new Vector3f(0.2f)); // Make it a smaller cube
+				shaderLC.setUniform("model", model);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
 
 			
 

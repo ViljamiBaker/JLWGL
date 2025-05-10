@@ -6,9 +6,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Camera {
-	public Vector3f cameraPos = new Vector3f(0.0f, 0.0f,  3.0f);
-	Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
-	Vector3f cameraUp = new Vector3f(0.0f, 1.0f,  0.0f);
+	public Vector3f position = new Vector3f(0.0f, 0.0f,  3.0f);
+	public Vector3f front = new Vector3f(0.0f, 0.0f, -1.0f);
+	public Vector3f up = new Vector3f(0.0f, 1.0f,  0.0f);
 	float fov = 1.0f;
 	float yaw = 0;
 	float pitch = 0;
@@ -51,7 +51,7 @@ public class Camera {
 			direction.x = (float)Math.cos(yaw) * (float)Math.cos(pitch);
 			direction.y = (float)Math.sin(pitch);
 			direction.z = (float)Math.sin(yaw) * (float)Math.cos(pitch);
-			cameraFront = direction.normalize();
+			front = direction.normalize();
 		}); 
     }
 
@@ -64,22 +64,22 @@ public class Camera {
     }
 
 	public Matrix4f getVeiw(){
-        return new Matrix4f().lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
+        return new Matrix4f().lookAt(position, position.add(front, new Vector3f()), up);
     }
 
     public void processInput(float deltaTime){
 		float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-			cameraPos.add(cameraFront.mul(cameraSpeed, new Vector3f()));
+			position.add(front.mul(cameraSpeed, new Vector3f()));
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-			cameraPos.sub(cameraFront.mul(cameraSpeed, new Vector3f()));
+			position.sub(front.mul(cameraSpeed, new Vector3f()));
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-			cameraPos.sub((cameraFront.cross(cameraUp, new Vector3f())).normalize().mul(cameraSpeed,new Vector3f()));
+			position.sub((front.cross(up, new Vector3f())).normalize().mul(cameraSpeed,new Vector3f()));
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-			cameraPos.add((cameraFront.cross(cameraUp, new Vector3f())).normalize().mul(cameraSpeed,new Vector3f()));
+			position.add((front.cross(up, new Vector3f())).normalize().mul(cameraSpeed,new Vector3f()));
 		}
 		if(glfwGetKey(window, GLFW_KEY_R)==GLFW_PRESS){
 			fov += 0.05f;
